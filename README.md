@@ -1,12 +1,36 @@
 # Validation Pipeline
 
-A bilingual dataset validation pipeline for English–Portuguese parallel corpora.
+This is a dataset validation pipeline for English–Portuguese parallel corpora. It is part of our semester project at the Institute of Space Technology, Islamabad. The team members are Ubaid ur Rehman, Hafsa Ayub, Hajra Shahid, and Iqra Younas. The project is supervised by Dr. Madiha Tahir.
 
 This repository provides a two-layer validation workflow:
 
 - **Layer 1** filters and categorizes sentence pairs using heuristics and language identification.
 - **Layer 2** scores clean sentence pairs using COMET quality estimation and separates them into quality buckets.
 - **Merge step** combines selected layer2 outputs into final `learner.en` and `learner.pt` files.
+
+## Layer 1 checks
+
+The first layer performs heuristic validation on aligned source and target sentences, including:
+
+- `length_ratio` — flags sentence pairs with a target/source length ratio outside the expected bounds (0.6–1.5).
+- `duplicates` — detects duplicate source sentences.
+- `identical` — flags pairs where source and target are identical and longer than two words.
+- `LangID` — checks that the source sentence is in the source language and the target sentence is in the target language using FastText.
+- `markdown` — flags markdown or HTML-like formatting in the target sentence.
+- `control_char` — detects control characters or replacement characters in the target sentence.
+
+Clean sentence pairs are saved separately, and flagged examples are written to category-specific files in `layer1/`.
+
+## Layer 2 processing
+
+The second layer takes the clean sentence pairs from Layer 1 and scores them using COMET quality estimation:
+
+- It loads a COMET-QE model (`Unbabel/wmt22-cometkiwi-da`).
+- It scores each cleaned sentence pair and assigns a quality bucket.
+- Sentence pairs are written to `*_excellent`, `*_good`, or `*_mediocre` files based on the score threshold.
+  - `excellent`: score >= 0.8
+  - `good`: 0.7 <= score < 0.8
+  - `mediocre`: score < 0.7
 
 ## Repository structure
 
@@ -86,3 +110,9 @@ The merge script writes to `learner.en` and `learner.pt` by default.
 
 - Edit `config.py` to change `SRC_FILE_NAME`, `TGT_FILE_NAME`, `SRC_LANG`, and `TGT_LANG`.
 - Adjust the merge file names in `Output/merge.py` to change which quality buckets are combined.
+
+## License
+- This project is open-source. A gift from the Institute of Space Technology, Islamabad. Feel free to use, modify, and distribute.
+
+## Contact & Support
+- For issues, questions, or contributions, please get in touch: askubaid@gmail.com 
