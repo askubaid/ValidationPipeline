@@ -1,0 +1,11 @@
+# Ignore generated CSV validation result files
+*.csv
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+
+# Local model caches
+model_cache/
+comet_models/
+lid.176.bin
